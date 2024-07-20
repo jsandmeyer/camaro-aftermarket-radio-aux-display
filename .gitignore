@@ -1,0 +1,4 @@
+kicad/**/*-backups*
+kicad/**/*.xml
+kicad/**/fp-info-cache
+kicad/**/*.lck
