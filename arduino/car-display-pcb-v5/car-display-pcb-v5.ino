@@ -34,6 +34,8 @@
 #define SPI_MISO 12
 #define SPI_SCK 13
 
+#define PGOOD_3V3 16
+
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 32 // OLED display height, in pixels
 
@@ -200,14 +202,25 @@ void renderParkAssist() {
 
 void setup() {
   Serial.begin(SER_BAUD);
+  Serial.println("Hello!");
 
   pinMode(UNIT_SW, INPUT);
+  pinMode(PGOOD_3V3, INPUT);
 
   use_imperial = !digitalRead(UNIT_SW);
 
+  if (use_imperial) {
+    Serial.println("Imperial units selected");
+  } else {
+    Serial.println("Metric units selected");
+  }
+
   while (CAN_OK != CAN0.begin(MCP_STDEXT, CAN_33K3BPS, MCPHZ)) {
+    Serial.println("Waiting for CANBUS bootup");
     delay(500);
   }
+
+  Serial.pirntln("Setting CANBUS filters");
 
   CAN0.init_Mask(0, 1, 0x00FFE000);
   CAN0.init_Filt(0, 1, 0x00424000);
@@ -221,13 +234,25 @@ void setup() {
   CAN0.setMode(MCP_LISTENONLY);
   pinMode(CAN0_INT, INPUT);
 
-  // todo: wait for 3.3V PGOOD before turning on display
+  Serial.println("CANBUS bootup complete");
+
+  // wait until PGOOD_3V3 is OK, then wait additional 250ms before trying OLED
+  while (!digitalRead(PGOOD_3V3)) {
+    Serial.println("Waiting for 3.3V PGOOD signal");
+    delay(250);
+  }
+
+  delay(250);
+  Serial.println("Confirmed 3.3V PGOOD signal");
+  
   while (!display.begin(SSD1306_SWITCHCAPVCC)) {
+    Serial.println("Waiting for OLED bootup");
     delay(500);
   }
 
   display.clearDisplay();
   display.display();
+  Serial.println("OLED bootup complete");
 
   Serial.println("Go!");
 }
