@@ -6972,6 +6972,16 @@
 	)
 	(wire
 		(pts
+			(xy 245.11 27.94) (xy 245.11 30.48)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "57f53c2d-b8ef-4cfa-a1ae-5497b5d63292")
+	)
+	(wire
+		(pts
 			(xy 54.61 96.52) (xy 64.77 96.52)
 		)
 		(stroke
@@ -7169,16 +7179,6 @@
 			(type default)
 		)
 		(uuid "71122c2d-290a-49f3-9d64-82c7c7cf0cc1")
-	)
-	(wire
-		(pts
-			(xy 245.11 27.94) (xy 245.11 30.48)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "72428828-58e3-49f4-8eff-694c3c441a95")
 	)
 	(wire
 		(pts
@@ -8342,7 +8342,7 @@
 	)
 	(wire
 		(pts
-			(xy 170.18 40.64) (xy 196.85 40.64)
+			(xy 167.64 40.64) (xy 196.85 40.64)
 		)
 		(stroke
 			(width 0)
@@ -8620,7 +8620,18 @@
 		)
 		(uuid "fe8a52d9-3c62-42b8-8e6a-221244f0993a")
 	)
-	(text "D5"
+	(text "23/SDA1"
+		(exclude_from_sim no)
+		(at 30.988 81.534 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "0da19912-a645-40c9-8d1c-7760f5786dad")
+	)
+	(text "OC0B/5"
 		(exclude_from_sim no)
 		(at 47.498 94.234 0)
 		(effects
@@ -8631,7 +8642,7 @@
 		)
 		(uuid "0f0b46dc-b88c-4f11-b293-e2d6876bb758")
 	)
-	(text "D3\n"
+	(text "INT1/3\n"
 		(exclude_from_sim no)
 		(at 47.498 89.154 0)
 		(effects
@@ -8642,7 +8653,7 @@
 		)
 		(uuid "109fac5e-6a2d-4eab-9b74-2293fa341b37")
 	)
-	(text "D1"
+	(text "RXD/1"
 		(exclude_from_sim no)
 		(at 47.498 84.074 0)
 		(effects
@@ -8653,7 +8664,7 @@
 		)
 		(uuid "123a3a48-6034-4027-a368-97bd25f1895b")
 	)
-	(text "D2"
+	(text "INT0/2"
 		(exclude_from_sim no)
 		(at 47.498 86.614 0)
 		(effects
@@ -8694,7 +8705,18 @@
 		)
 		(uuid "2b9aa9e9-f793-40b0-8f1f-632e5b59e99e")
 	)
-	(text "D8\n"
+	(text "SCK1/15"
+		(exclude_from_sim no)
+		(at 47.498 63.754 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "2f3d01d5-68e9-410f-afcd-fbd3f6e5090f")
+	)
+	(text "8\n"
 		(exclude_from_sim no)
 		(at 47.244 38.354 0)
 		(effects
@@ -8705,7 +8727,18 @@
 		)
 		(uuid "3b51d386-49b0-48c2-8f84-9da05d821125")
 	)
-	(text "D10"
+	(text "17"
+		(exclude_from_sim no)
+		(at 47.498 68.834 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "53a1c7e3-d24c-4f11-a12c-338d981967c8")
+	)
+	(text "OC1B/SS/10"
 		(exclude_from_sim no)
 		(at 47.244 43.434 0)
 		(effects
@@ -8716,7 +8749,7 @@
 		)
 		(uuid "5aa8ef2a-f10d-4911-84a5-c588ca6bbc4a")
 	)
-	(text "D6"
+	(text "OC0A/6"
 		(exclude_from_sim no)
 		(at 47.498 96.774 0)
 		(effects
@@ -8757,7 +8790,51 @@
 		)
 		(uuid "813e93a3-d5e9-48ee-befd-c72efe3adb9d")
 	)
-	(text "D0"
+	(text "SCL/19"
+		(exclude_from_sim no)
+		(at 47.498 73.914 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "99e033de-44e7-4934-99d7-53943070f7a3")
+	)
+	(text "16"
+		(exclude_from_sim no)
+		(at 47.498 66.294 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "9c4c5bd5-f8b5-42c4-898a-17b4610a7b6b")
+	)
+	(text "24/SCL1"
+		(exclude_from_sim no)
+		(at 30.988 84.074 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9df22ae5-66cc-414a-819c-fbb44fd3a299")
+	)
+	(text "SCK/13"
+		(exclude_from_sim no)
+		(at 47.244 51.054 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "a0ca515d-458d-458a-9482-8fbb6888e66d")
+	)
+	(text "TXD/0"
 		(exclude_from_sim no)
 		(at 47.498 81.534 0)
 		(effects
@@ -8768,7 +8845,18 @@
 		)
 		(uuid "accbeafa-ead2-4d62-9083-a941ddec88f7")
 	)
-	(text "D7"
+	(text "SDA/18"
+		(exclude_from_sim no)
+		(at 47.498 71.374 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "b53eb8b5-0952-47ea-a2c9-d85150cabbf6")
+	)
+	(text "7"
 		(exclude_from_sim no)
 		(at 47.498 99.314 0)
 		(effects
@@ -8778,6 +8866,17 @@
 			(justify right)
 		)
 		(uuid "b73a1787-020e-49dd-8f6f-390121349c97")
+	)
+	(text "26/MOSI1"
+		(exclude_from_sim no)
+		(at 30.988 89.154 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "b74ffad3-d3be-46d5-8215-aa21f53d01c0")
 	)
 	(text "SPI/FTDI CONNECTORS"
 		(exclude_from_sim no)
@@ -8789,7 +8888,18 @@
 		)
 		(uuid "b7cbbbe5-a90c-4bef-9e44-4a2db7b11512")
 	)
-	(text "D9\n"
+	(text "MISO/12"
+		(exclude_from_sim no)
+		(at 47.244 48.514 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "b7ebcf2d-8b03-44d1-bb1e-407b3ffdfb18")
+	)
+	(text "OC1A/9\n"
 		(exclude_from_sim no)
 		(at 47.244 40.894 0)
 		(effects
@@ -8800,7 +8910,29 @@
 		)
 		(uuid "b8e2a119-18e8-4e9e-ac72-533d42d83076")
 	)
-	(text "D4\n"
+	(text "MISO1/14"
+		(exclude_from_sim no)
+		(at 47.498 61.214 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "c0349126-32fb-4e2d-b56a-51db6429514c")
+	)
+	(text "25/SS1"
+		(exclude_from_sim no)
+		(at 30.988 86.614 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "c1d73047-ce64-4acb-bf36-5b2bbe5724fa")
+	)
+	(text "4"
 		(exclude_from_sim no)
 		(at 47.498 91.694 0)
 		(effects
@@ -8810,6 +8942,17 @@
 			(justify right)
 		)
 		(uuid "cd326a61-ae26-44f6-bd59-4c6d953f4d91")
+	)
+	(text "OC2A/MOSI/11"
+		(exclude_from_sim no)
+		(at 47.244 45.974 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "d4ec876a-66df-4bdd-9cb2-a1f25a49cbca")
 	)
 	(text "OLED CONN / FB / LEVEL SHIFT"
 		(exclude_from_sim no)
@@ -9976,7 +10119,7 @@
 	)
 	(global_label "PG_5V"
 		(shape input)
-		(at 170.18 40.64 180)
+		(at 167.64 40.64 180)
 		(fields_autoplaced yes)
 		(effects
 			(font
@@ -9986,7 +10129,7 @@
 		)
 		(uuid "d6b2b202-aba7-4eef-8aa9-b6301d977742")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 161.3891 40.64 0)
+			(at 158.8491 40.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10491,7 +10634,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "C1608X7R1V105K080AC"
 			(at 158.75 97.79 0)
 			(effects
 				(font
@@ -14683,7 +14826,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "GRM31CR71H475KA12L"
 			(at 107.95 133.35 0)
 			(effects
 				(font
@@ -14753,7 +14896,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "GRM31CR71H475KA12L"
 			(at 140.97 133.35 0)
 			(effects
 				(font
@@ -15109,7 +15252,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "GRM31CR71H475KA12L"
 			(at 130.81 129.54 0)
 			(effects
 				(font

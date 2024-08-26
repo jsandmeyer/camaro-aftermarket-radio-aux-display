@@ -26,7 +26,7 @@
 #define CAN0_INT 7
 #define OLED_DC 5
 #define OLED_RST 9
-#define UNIT_SW 2
+#define UNIT_SW 15
 #define SPI_CS_PIN_CAN 10
 #define SPI_CS_PIN_OLED 6
 
@@ -220,7 +220,7 @@ void setup() {
     delay(500);
   }
 
-  Serial.pirntln("Setting CANBUS filters");
+  Serial.println("Setting CANBUS filters");
 
   CAN0.init_Mask(0, 1, 0x00FFE000);
   CAN0.init_Filt(0, 1, 0x00424000);
