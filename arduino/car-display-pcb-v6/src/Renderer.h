@@ -17,6 +17,11 @@ protected:
     Adafruit_SSD1306 *display;
 public:
     virtual ~Renderer() = default;
+
+    /**
+     * Create a Renderer
+     * @param display OLED display
+     */
     explicit Renderer(Adafruit_SSD1306 *display);
 
     /**
