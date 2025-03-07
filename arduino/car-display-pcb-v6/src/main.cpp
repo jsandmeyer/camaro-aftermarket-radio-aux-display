@@ -2,6 +2,9 @@
 #define MCP_HZ MCP_16MHZ
 #define SER_BAUD 115200
 #define OLED_SPI_BAUD 1000000UL
+#define DO_DEBUG true
+
+#include "debug.h"
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -146,17 +149,8 @@ void setup() {
      */
 
     renderers = new RendererContainer(2);
-    auto pa = new GMParkAssist(display, useImperial);
-    auto t = new GMTemperature(display, useImperial);
-    Serial.printf("addr pa=%p t=%p\n", &pa, &t);
-    renderers->setRenderer(0, pa);
-    renderers->setRenderer(1, t);
-
-    t->recognizesArbId(0x212);
-
-    for (Renderer *renderer : *renderers) {
-        Serial.printf("Check renderer %s at addr %p\n", renderer->getName(), &renderer);
-    }
+    renderers->setRenderer(0, new GMParkAssist(display, useImperial));
+    renderers->setRenderer(1, new GMTemperature(display, useImperial));
 
     Serial.println(F("Booted up"));
 }
@@ -172,11 +166,11 @@ void loop() {
 
         canBus->readMsgBuf(&canId, &len, buf);
         auto const arbId = GMLAN_ARB(canId);
-        Serial.printf(F("Checking ARB ID %lx\n"), arbId);
+        DEBUG(Serial.printf(F("Checking ARB ID %lx\n"), arbId));
 
         for (Renderer *renderer : *renderers) {
             if (renderer->recognizesArbId(arbId)) {
-                Serial.printf(F("Processing via %s ARB ID %lx\n"), renderer->getName(), arbId);
+                DEBUG(Serial.printf(F("Processing via %s ARB ID %lx\n"), renderer->getName(), arbId));
                 renderer->processMessage(arbId, buf);
             }
         }
@@ -188,7 +182,7 @@ void loop() {
      */
     for (Renderer *renderer : *renderers) {
         if (renderer->shouldRender()) {
-            Serial.printf(F("Rendering [1] via %s\n"), renderer->getName());
+            DEBUG(Serial.printf(F("Rendering [1] via %s\n"), renderer->getName()));
             renderer->render();
             lastRenderer = renderer;
             return; // exit loop
@@ -206,7 +200,7 @@ void loop() {
                 return;
             }
 
-            Serial.printf(F("Rendering [2] via %s\n"), renderer->getName());
+            DEBUG(Serial.printf(F("Rendering [2] via %s\n"), renderer->getName()));
             renderer->render();
             lastRenderer = renderer;
             return; // exit loop

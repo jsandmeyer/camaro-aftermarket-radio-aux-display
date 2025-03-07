@@ -1,9 +1,10 @@
+#include "debug.h"
+
 #include <Arduino.h>
 #include <math.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Fonts/FreeSans9pt7b.h>
-#include <limits.h>
 
 #include "GMParkAssist.h"
 #include "TextHelper.h"
@@ -78,7 +79,7 @@ void GMParkAssist::renderDistance() const {
  * Handles the Rear Park Assist "OFF" message
  */
 void GMParkAssist::processParkAssistDisableMessage() {
-    Serial.println(F("PA OFF"));
+    DEBUG(Serial.println(F("PA OFF")));
 
     // blanking out all data will prevent future render
     lastTimestamp = 0;
@@ -98,7 +99,7 @@ void GMParkAssist::processParkAssistInfoMessage(uint8_t buf[8]) {
      * rendering function will multiply by 0.0328084 for inches if selected
      */
 
-    Serial.printf(F("PA ON, distance: %ucm\n"), buf[1]);
+    DEBUG(Serial.printf(F("PA ON, distance: %ucm\n"), buf[1]));
 
     lastTimestamp = millis() | 1; // never 0 because of bool evaluation elsewhere; value being 1 ms off is OK
     parkAssistDistance = buf[1];
@@ -173,7 +174,6 @@ void GMParkAssist::processMessage(unsigned long const arbId, uint8_t buf[8]) {
     const auto state = buf[0] & 0x0F;
 
     if (state == 0x0F) {
-        Serial.println("Turning PA Off because got 0x0F");
         processParkAssistDisableMessage();
         return;
     }
@@ -184,7 +184,7 @@ void GMParkAssist::processMessage(unsigned long const arbId, uint8_t buf[8]) {
     }
 
     // Don't recognize this message
-    Serial.printf(F("PA Unknown value %u\n"), state);
+    DEBUG(Serial.printf(F("PA Unknown value %u\n"), state));
 }
 
 /**
@@ -209,11 +209,8 @@ void GMParkAssist::render() {
  * @return whether rendering should occur
  */
 bool GMParkAssist::shouldRender() {
-    auto const now = millis();
-
     // if lastTimestamp is too long ago, then disable it
-    if (lastTimestamp > 0 && now > lastTimestamp + PA_TIMEOUT) {
-        Serial.printf("Turning PA Off because lastTimestamp is bad, ts=%lu, pa_timeout=%lu, sum=%lu, now=%lu", lastTimestamp, PA_TIMEOUT, lastTimestamp + PA_TIMEOUT, now);
+    if (lastTimestamp > 0 && millis() > lastTimestamp + PA_TIMEOUT) {
         processParkAssistDisableMessage();
     }
 

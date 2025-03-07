@@ -1,3 +1,5 @@
+#include "debug.h"
+
 #include <Arduino.h>
 #include <math.h>
 #include <Adafruit_GFX.h>
@@ -18,7 +20,7 @@ GMTemperature::GMTemperature(Adafruit_SSD1306* display, const bool useImperial):
  * @return
  */
 void GMTemperature::processMessage(unsigned long const arbId, uint8_t buf[8]) {
-    Serial.printf(F("Got temperature: %x\n"), buf[1]);
+    DEBUG(Serial.printf(F("Got temperature: %x\n"), buf[1]));
 
     /**
      * buf[1] is hex representation of 2 * temperature in C with offset of 40 degrees
@@ -37,7 +39,7 @@ void GMTemperature::processMessage(unsigned long const arbId, uint8_t buf[8]) {
  * Updates the display
  */
 void GMTemperature::render() {
-    Serial.println(F("Render Temperature"));
+    DEBUG(Serial.println(F("Render Temperature")));
     display->clearDisplay();
 
     // max text size is realistically 6 - examples "-40  F" or "190  F" or "-40  C" or "88  C"
@@ -69,7 +71,7 @@ void GMTemperature::render() {
     // y2 is used for degree symbol center point
     const auto y2 = static_cast<int16_t>((SCREEN_HEIGHT - height) / 2 + 4);
 
-    Serial.printf(F("Temperature text: \"%s\", x1=%d, x2=%d, y1=%d y2=%d\n"), text, x1, x2, y1, y2);
+    DEBUG(Serial.printf(F("Temperature text: \"%s\", x1=%d, x2=%d, y1=%d y2=%d\n"), text, x1, x2, y1, y2));
 
     // write text
     display->setCursor(x1, y1);
