@@ -146,8 +146,17 @@ void setup() {
      */
 
     renderers = new RendererContainer(2);
-    renderers->setRenderer(0, new GMParkAssist(display, useImperial));
-    renderers->setRenderer(1, new GMTemperature(display, useImperial));
+    auto pa = new GMParkAssist(display, useImperial);
+    auto t = new GMTemperature(display, useImperial);
+    Serial.printf("addr pa=%p t=%p\n", &pa, &t);
+    renderers->setRenderer(0, pa);
+    renderers->setRenderer(1, t);
+
+    t->recognizesArbId(0x212);
+
+    for (Renderer *renderer : *renderers) {
+        Serial.printf("Check renderer %s at addr %p\n", renderer->getName(), &renderer);
+    }
 
     Serial.println(F("Booted up"));
 }
@@ -163,11 +172,11 @@ void loop() {
 
         canBus->readMsgBuf(&canId, &len, buf);
         auto const arbId = GMLAN_ARB(canId);
-        Serial.printf(F("Checking ARB ID %u\n"), arbId);
+        Serial.printf(F("Checking ARB ID %lx\n"), arbId);
 
         for (Renderer *renderer : *renderers) {
             if (renderer->recognizesArbId(arbId)) {
-                Serial.printf(F("Processing ARB ID %u via %s\n"), arbId, renderer->getName());
+                Serial.printf(F("Processing via %s ARB ID %lx\n"), renderer->getName(), arbId);
                 renderer->processMessage(arbId, buf);
             }
         }
@@ -193,7 +202,7 @@ void loop() {
     for (Renderer *renderer : *renderers) {
         if (renderer->canRender()) {
             // if we just rendered, don't waste time re-rendering
-            if (lastRenderer != renderer) {
+            if (lastRenderer == renderer) {
                 return;
             }
 

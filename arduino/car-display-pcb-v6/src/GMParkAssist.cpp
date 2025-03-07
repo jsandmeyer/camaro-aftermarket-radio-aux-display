@@ -173,6 +173,7 @@ void GMParkAssist::processMessage(unsigned long const arbId, uint8_t buf[8]) {
     const auto state = buf[0] & 0x0F;
 
     if (state == 0x0F) {
+        Serial.println("Turning PA Off because got 0x0F");
         processParkAssistDisableMessage();
         return;
     }
@@ -211,13 +212,8 @@ bool GMParkAssist::shouldRender() {
     auto const now = millis();
 
     // if lastTimestamp is too long ago, then disable it
-    if (lastTimestamp > 0 && lastTimestamp + PA_TIMEOUT > now) {
-        processParkAssistDisableMessage();
-    }
-
-    if (lastTimestamp > 0 && now < lastTimestamp && now + (ULONG_MAX - lastTimestamp) > PA_TIMEOUT) {
-        // wrapped around - only happens after about 49d 17h in reverse with obstructions moving around
-        // this is definitely useless but if I skip this someone will open a defect
+    if (lastTimestamp > 0 && now > lastTimestamp + PA_TIMEOUT) {
+        Serial.printf("Turning PA Off because lastTimestamp is bad, ts=%lu, pa_timeout=%lu, sum=%lu, now=%lu", lastTimestamp, PA_TIMEOUT, lastTimestamp + PA_TIMEOUT, now);
         processParkAssistDisableMessage();
     }
 
