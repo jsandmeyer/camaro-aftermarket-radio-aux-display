@@ -21,10 +21,20 @@
 #define GMLAN_R_ARB(v) GMLAN_UNSHIFT_AND_MASK(v, GMLAN_ARB_MASK, GMLAN_ARB_SHIFT)
 #define GMLAN_R_SND(v) GMLAN_UNSHIFT_AND_MASK(v, GMLAN_SND_MASK, GMLAN_SND_SHIFT)
 
-// known messages
-// Rear Park Assist: typically 0x103A80BB or 0x??3A8???
+// GMLAN Messages
+// Rear Park Assist
 #define GMLAN_MSG_PARK_ASSIST 0x1D4UL
-// Outside Temperature: typically 0x10424060 or 0x??424???
+// Outside Temperature
 #define GMLAN_MSG_TEMPERATURE 0x212UL
+// Cluster Units
+#define GMLAN_MSG_CLUSTER_UNITS 0x425
+
+// GMLAN Message Values
+// Rear Park Assist
+#define GMLAN_VAL_PARK_ASSIST_OFF 0x0F
+#define GMLAN_VAL_PARK_ASSIST_ON 0x00
+// Cluster Units
+#define GMLAN_VAL_CLUSTER_UNITS_METRIC 0x00
+#define GMLAN_VAL_CLUSTER_UNITS_IMPERIAL 0x05
 
 #endif //GMLAN_H

@@ -1,25 +1,34 @@
-#include "debug.h"
-
 #include <Arduino.h>
 #include <math.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Fonts/FreeSans18pt7b.h>
 
+#include "debug.h"
 #include "GMTemperature.h"
 #include "TextHelper.h"
 #include "oled.h"
 #include "gmlan.h"
 
-GMTemperature::GMTemperature(Adafruit_SSD1306* display, const bool useImperial): Renderer(display), useImperial(useImperial) {}
+/**
+ * Create a GMTemperature instance
+ * @param display the OLED display from SSD1306 library
+ */
+GMTemperature::GMTemperature(Adafruit_SSD1306* display) : Renderer(display) {}
 
 /**
  * Processes the exterior temperature sensor data
- * @param arbId not used
+ * @param arbId the arbitration ID GMLAN_MSG_TEMPERATURE
+ * @param len the length of the buffer data
  * @param buf is the buffer data from GMLAN
  * @return
  */
-void GMTemperature::processMessage(unsigned long const arbId, uint8_t buf[8]) {
+void GMTemperature::processMessage(unsigned long const arbId, uint8_t len, uint8_t buf[8]) {
+    if (arbId != GMLAN_MSG_TEMPERATURE) {
+        // don't process irrelevant messages
+        return;
+    }
+
     DEBUG(Serial.printf(F("Got temperature: %x\n"), buf[1]));
 
     /**
@@ -45,10 +54,11 @@ void GMTemperature::render() {
     // max text size is realistically 6 - examples "-40  F" or "190  F" or "-40  C" or "88  C"
     char text[10];
     auto convertedTemperature = temperature / 2 - 40;
-    const auto unit = useImperial ? 'F' : 'C';
+    auto unit = 'C';
 
-    if (unit == 'F') {
+    if (units == GMLAN_VAL_CLUSTER_UNITS_IMPERIAL) {
         // F = 1.8*C + 32
+        unit = 'F';
         convertedTemperature = static_cast<uint8_t>(lround(1.8 * convertedTemperature)) + 32;
     }
 

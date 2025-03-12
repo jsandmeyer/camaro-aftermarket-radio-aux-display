@@ -16,12 +16,7 @@
 #define PA_TIMEOUT 10000UL // time out park assist mode after 10 seconds
 #define CM_PER_IN 0.393701 // for converting park assist distance to Imperial units
 
-class GMParkAssist final: public Renderer {
-    /**
-     * Whether to use Imperial (instead of Metric) units in display
-     */
-    bool useImperial = false;
-
+class GMParkAssist final : public Renderer {
     /**
      * last timestamp a PA notification was received
      */
@@ -86,16 +81,16 @@ public:
     /**
      * Create a GMParkAssist instance
      * @param display the OLED display from SSD1306 library
-     * @param useImperial whether to use Imperial (instead of Metric) units in display
      */
-    GMParkAssist(Adafruit_SSD1306 *display, bool useImperial);
+    explicit GMParkAssist(Adafruit_SSD1306 *display);
 
     /**
      * Process GMLAN message
-     * @param arbId the arbitration ID from GMLAN (assumed to be 0x1D4)
+     * @param arbId the arbitration ID GMLAN_MSG_PARK_ASSIST
+     * @param len the length of the buffer data
      * @param buf buffer data from GMLAN
      */
-    void processMessage(unsigned long arbId, uint8_t buf[8]) override;
+    void processMessage(unsigned long arbId, uint8_t len, uint8_t buf[8]) override;
 
     /**
      * Renders the current Park Assist display

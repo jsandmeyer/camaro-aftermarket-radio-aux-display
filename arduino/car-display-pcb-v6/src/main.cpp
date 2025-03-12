@@ -2,9 +2,6 @@
 #define MCP_HZ MCP_16MHZ
 #define SER_BAUD 115200
 #define OLED_SPI_BAUD 1000000UL
-#define DO_DEBUG true
-
-#include "debug.h"
 
 #include <Arduino.h>
 #include <SPI.h>
@@ -15,26 +12,25 @@
 #include "oled.h"
 #include "gmlan.h"
 #include "Renderer.h"
+#include "RendererContainer.h"
 #include "GMTemperature.h"
 #include "GMParkAssist.h"
-#include "RendererContainer.h"
+#include "Watchdog.h"
+#include "debug.h"
 
 // pin definitions: CANBUS
 #define SPI_CS_PIN_CAN 10
 #define CAN0_INT 16
 
 // pin definitions: OLED display
-#define SPI_CS_PIN_OLED 4
-#define OLED_DC 2
+#define SPI_CS_PIN_OLED 2
+#define OLED_DC 4
 #define OLED_RST 3
 
 // pin definitions: SPI
 #define SPI_MOSI 11
 #define SPI_MISO 12
 #define SPI_SCK 13
-
-// pin definitions: misc IO
-#define UNIT_SW 17
 
 // IO control objects
 Adafruit_SSD1306 *display;
@@ -47,6 +43,7 @@ Renderer *lastRenderer; // last renderer to render, to avoid doubles of same dat
 void setup() {
     Serial.begin(SER_BAUD);
     Serial.println(F("Booting up"));
+    const auto watchdog = new Watchdog();
 
     delay(10);
 
@@ -67,6 +64,7 @@ void setup() {
         if (canInitResult != CAN_OK) {
             Serial.printf(F("MCP2515 initialization failed, error code =%u\n"), canInitResult);
             delay(500);
+            watchdog->countError();
         }
     } while (canInitResult != CAN_OK);
 
@@ -81,15 +79,16 @@ void setup() {
         canInitResult |= canBus->init_Filt(1, 1, GMLAN_R_ARB(GMLAN_MSG_PARK_ASSIST)); // becomes 0x003A8000
 
         // init mask 1, filters 2-5 which use mask 1, set to ignore everything and no ext
-        canInitResult |= canBus->init_Mask(1, 0, 0x00FF0000);
-        canInitResult |= canBus->init_Filt(2, 0, 0x00000000);
-        canInitResult |= canBus->init_Filt(3, 0, 0x00000000);
-        canInitResult |= canBus->init_Filt(4, 0, 0x00000000);
-        canInitResult |= canBus->init_Filt(5, 0, 0x00000000);
+        canInitResult |= canBus->init_Mask(1, 1, 0x00FFE000);
+        canInitResult |= canBus->init_Filt(2, 1, GMLAN_R_ARB(0x425UL));
+        canInitResult |= canBus->init_Filt(3, 1, 0x00000000);
+        canInitResult |= canBus->init_Filt(4, 1, 0x00000000);
+        canInitResult |= canBus->init_Filt(5, 1, 0x00000000);
 
         if (canInitResult != CAN_OK) {
             Serial.printf(F("MCP2515 masks and filters failed, error code =%u\n"), canInitResult);
             delay(500);
+            watchdog->countError();
         }
     } while (canInitResult != CAN_OK);
 
@@ -99,6 +98,7 @@ void setup() {
         if (canInitResult != CAN_OK) {
             Serial.printf(F("MCP2515 could not enter listen-only mode, error code =%u\n"), canInitResult);
             delay(500);
+            watchdog->countError();
         }
     } while (canInitResult != CAN_OK);
 
@@ -121,6 +121,7 @@ void setup() {
         if (!displayInitResult) {
             Serial.println(F("SSD1306 OLED initialization error"));
             delay(500);
+            watchdog->countError();
         }
     } while (!displayInitResult);
 
@@ -129,28 +130,14 @@ void setup() {
     Serial.println(F("SSD1306 OLED initialization complete"));
 
     /*
-     * Determine whether to use Metric or Imperial on startup, based on jumper
-     * A "high" signal indicates Metric should be used
-     */
-
-    pinMode(UNIT_SW, INPUT);
-    auto const useImperial = !digitalRead(UNIT_SW);
-
-    if (useImperial) {
-        Serial.println(F("Imperial units selected"));
-    } else {
-        Serial.println(F("Metric units selected"));
-    }
-
-    /*
      * Set up Renderer objects
      * These objects both read/process GMLAN data and render to the display when called
      * These should be stored in RendererContainer in order of priority, with most important renderer first
      */
 
     renderers = new RendererContainer(2);
-    renderers->setRenderer(0, new GMParkAssist(display, useImperial));
-    renderers->setRenderer(1, new GMTemperature(display, useImperial));
+    renderers->setRenderer(0, new GMParkAssist(display));
+    renderers->setRenderer(1, new GMTemperature(display));
 
     Serial.println(F("Booted up"));
 }
@@ -168,10 +155,19 @@ void loop() {
         auto const arbId = GMLAN_ARB(canId);
         DEBUG(Serial.printf(F("Checking ARB ID %lx\n"), arbId));
 
+        if (arbId == GMLAN_MSG_CLUSTER_UNITS) {
+            const auto units = buf[0] & 0x0F;
+            DEBUG(Serial.printf(F("New cluster units: %x\n"), units));
+
+            for (Renderer *renderer : *renderers) {
+                renderer->setUnits(units);
+            }
+        }
+
         for (Renderer *renderer : *renderers) {
             if (renderer->recognizesArbId(arbId)) {
                 DEBUG(Serial.printf(F("Processing via %s ARB ID %lx\n"), renderer->getName(), arbId));
-                renderer->processMessage(arbId, buf);
+                renderer->processMessage(arbId, len, buf);
             }
         }
     }

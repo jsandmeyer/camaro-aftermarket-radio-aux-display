@@ -1,11 +1,10 @@
-#include "debug.h"
-
 #include <Arduino.h>
 #include <math.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <Fonts/FreeSans9pt7b.h>
 
+#include "debug.h"
 #include "GMParkAssist.h"
 #include "TextHelper.h"
 #include "oled.h"
@@ -49,20 +48,24 @@ void GMParkAssist::renderDistance() const {
     // max text size is realistically 9 - examples "255cm" or "12in" or "21ft 3in" or "20ft 10in"
     char text[12];
 
-    if (useImperial) {
-        // convert cm to inches, then divide out feet
-        auto inches = static_cast<uint8_t>(lround(CM_PER_IN * parkAssistDistance));
-        const auto feet = inches / 12;
-        inches -= feet * 12;
+    switch (units) {
+        case GMLAN_VAL_CLUSTER_UNITS_IMPERIAL: {
+            // convert cm to inches, then divide out feet
+            auto inches = static_cast<uint8_t>(lround(CM_PER_IN * parkAssistDistance));
+            const auto feet = inches / 12;
+            inches -= feet * 12;
 
-        // only show feet if there is at least 1 foot
-        if (feet > 0) {
-            snprintf(text, 11, "%dft %din", feet, inches);
-        } else {
-            snprintf(text, 11, "%din", inches);
+            // only show feet if there is at least 1 foot
+            if (feet > 0) {
+                snprintf(text, 11, "%dft %din", feet, inches);
+            } else {
+                snprintf(text, 11, "%din", inches);
+            }
         }
-    } else {
-        snprintf(text, 11, "%dcm", parkAssistDistance);
+        case GMLAN_VAL_CLUSTER_UNITS_METRIC:
+        default: {
+            snprintf(text, 11, "%dcm", parkAssistDistance);
+        }
     }
 
     // distance text display
@@ -157,28 +160,33 @@ void GMParkAssist::processParkAssistInfoMessage(uint8_t buf[8]) {
 /**
  * Create a GMParkAssist instance
  * @param display the OLED display from SSD1306 library
- * @param useImperial whether to use Imperial (instead of Metric) units in display
  */
-GMParkAssist::GMParkAssist(Adafruit_SSD1306* display, const bool useImperial): Renderer(display), useImperial(useImperial) {}
+GMParkAssist::GMParkAssist(Adafruit_SSD1306* display) : Renderer(display) {}
 
 /**
  * Processes the park assist message and sets state
- * @param arbId not used
+ * @param arbId the arbitration ID GMLAN_MSG_PARK_ASSIST
+ * @param len the length of the buffer data
  * @param buf is the buffer data from GMLAN
  */
-void GMParkAssist::processMessage(unsigned long const arbId, uint8_t buf[8]) {
+void GMParkAssist::processMessage(unsigned long const arbId, uint8_t len, uint8_t buf[8]) {
+    if (arbId != GMLAN_MSG_PARK_ASSIST) {
+        // don't process irrelevant messages
+        return;
+    }
+
     /*
      * Right nibble of buf[0] tells whether Rear Park Assist is ON or OFF
      * Left nibble may have unneeded data, so need to mask it out
      */
     const auto state = buf[0] & 0x0F;
 
-    if (state == 0x0F) {
+    if (state == GMLAN_VAL_PARK_ASSIST_OFF) {
         processParkAssistDisableMessage();
         return;
     }
 
-    if (state == 0x00) {
+    if (state == GMLAN_VAL_PARK_ASSIST_ON) {
         processParkAssistInfoMessage(buf);
         return;
     }
@@ -234,7 +242,7 @@ bool GMParkAssist::canRender() {
  * @return whether this module cares about this arbitration ID
  */
 bool GMParkAssist::recognizesArbId(unsigned long const arbId) {
-    return arbId == GMLAN_MSG_PARK_ASSIST;
+    return arbId == GMLAN_MSG_PARK_ASSIST || arbId == GMLAN_MSG_CLUSTER_UNITS;
 }
 
 /**

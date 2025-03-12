@@ -5,12 +5,7 @@
 #include <Adafruit_SSD1306.h>
 #include "Renderer.h"
 
-class GMTemperature final: public Renderer {
-    /**
-     * Whether to use Imperial (instead of Metric) units in display
-     */
-    bool useImperial = false;
-
+class GMTemperature final : public Renderer {
     /**
      * Most recently recorded temperature
      * Stored is 2 * (temperature in degrees Celsius + 40)
@@ -21,16 +16,16 @@ public:
     /**
      * Create a GMTemperature instance
      * @param display the OLED display from SSD1306 library
-     * @param useImperial whether to use Imperial (instead of Metric) units in display
      */
-    GMTemperature(Adafruit_SSD1306 *display, bool useImperial);
+    explicit GMTemperature(Adafruit_SSD1306 *display);
 
     /**
      * Process GMLAN message
-     * @param arbId the arbitration ID from GMLAN (assumed to be 0x212)
+     * @param arbId the arbitration ID GMLAN_MSG_TEMPERATURE
+     * @param len the length of the buffer data
      * @param buf buffer data from GMLAN
      */
-    void processMessage(unsigned long arbId, uint8_t buf[8]) override;
+    void processMessage(unsigned long arbId, uint8_t len, uint8_t buf[8]) override;
 
     /**
      * Renders the current Temperature display

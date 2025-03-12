@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <Adafruit_SSD1306.h>
+#include "gmlan.h"
 
 class Renderer {
 protected:
@@ -10,6 +11,11 @@ protected:
      * Whether this module needs to be rendered.
      */
     bool needsRender = false;
+
+    /**
+     * Current unit choice
+     */
+    byte units = GMLAN_VAL_CLUSTER_UNITS_METRIC;
 
     /**
      * OLED display
@@ -27,9 +33,10 @@ public:
     /**
      * Process a GMLAN message
      * @param arbId the Arbitration ID
+     * @param len the length of the buffer data
      * @param buf the buffer data
      */
-    virtual void processMessage(unsigned long arbId, uint8_t buf[8]);
+    virtual void processMessage(unsigned long arbId, uint8_t len, uint8_t buf[8]);
 
     /**
      * Renders data to the display
@@ -63,6 +70,12 @@ public:
      * @return the name as a string
      */
     [[nodiscard]] virtual const char* getName() const;
+
+    /**
+     * Sets new cluster units
+     * @param units the current unit data (GMLAN_VAL_CLUSTER_UNITS_*)
+     */
+    void setUnits(byte units);
 };
 
 #endif //RENDERER_H

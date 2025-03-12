@@ -1,7 +1,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#ifdef DO_DEBUG
+#if DO_DEBUG == true
     #define DEBUG(X) X;
 #else
     #define DEBUG(X)
