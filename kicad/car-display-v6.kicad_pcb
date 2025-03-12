@@ -11377,6 +11377,18 @@
 			(justify bottom)
 		)
 	)
+	(gr_text "DISPLAY ADAPTER  J-S.DEV"
+		(at 84.582 168.656 0)
+		(layer "F.SilkS")
+		(uuid "84dcf50c-6679-4162-ac1f-d5a1b8588e41")
+		(effects
+			(font
+				(size 0.762 0.762)
+				(thickness 0.127)
+			)
+			(justify bottom)
+		)
+	)
 	(gr_text "GND"
 		(at 103.632 179.324 0)
 		(layer "F.SilkS")
