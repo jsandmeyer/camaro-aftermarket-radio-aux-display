@@ -1,7 +1,13 @@
-kicad/**/*-backups*
-kicad/**/*.xml
-kicad/**/fp-info-cache
-kicad/**/*.lck
+**/pcb/**/*-backups*
+**/pcb/**/*.xml
+**/pcb/**/fp-info-cache
+**/pcb/**/*.lck
+**/pcb/**/#auto_saved_files#
+**/kicad/**/*-backups*
+**/kicad/**/*.xml
+**/kicad/**/fp-info-cache
+**/kicad/**/*.lck
+**/kicad/**/#auto_saved_files#
 
 .idea
 .gitignore

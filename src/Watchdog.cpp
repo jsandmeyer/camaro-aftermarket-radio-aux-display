@@ -20,7 +20,7 @@ void Watchdog::countError() {
 }
 
 void Watchdog::resetNow() {
-    DEBUG(Serial.print(F("Watchdog rebooting %lx\n")));
+    DEBUG(Serial.printf(F("Watchdog rebooting after %u failures\n"), errors));
     delay(1000);
     digitalWrite(SW_RESET, LOW);
 }

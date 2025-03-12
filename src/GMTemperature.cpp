@@ -79,7 +79,7 @@ void GMTemperature::render() {
     // y1 is bottom position of text
     const auto y1 = static_cast<int16_t>((SCREEN_HEIGHT + height) / 2);
     // y2 is used for degree symbol center point
-    const auto y2 = static_cast<int16_t>((SCREEN_HEIGHT - height) / 2 + 4);
+    const auto y2 = static_cast<int16_t>((SCREEN_HEIGHT - height) / 2 + 5);
 
     DEBUG(Serial.printf(F("Temperature text: \"%s\", x1=%d, x2=%d, y1=%d y2=%d\n"), text, x1, x2, y1, y2));
 

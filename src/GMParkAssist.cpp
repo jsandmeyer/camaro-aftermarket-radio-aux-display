@@ -61,6 +61,8 @@ void GMParkAssist::renderDistance() const {
             } else {
                 snprintf(text, 11, "%din", inches);
             }
+
+            break;
         }
         case GMLAN_VAL_CLUSTER_UNITS_METRIC:
         default: {
