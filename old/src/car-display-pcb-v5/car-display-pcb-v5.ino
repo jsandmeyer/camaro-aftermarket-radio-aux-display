@@ -23,7 +23,7 @@
 #define GMLAN_ARB(v) GMLAN_MS(v, GMLAN_ARB_MASK, GMLAN_ARB_SHIFT)
 #define GMLAN_SENDER(v) GMLAN_MS(v, GMLAN_SENDER_MASK, GMLAN_SENDER_SHIFT)
 
-#define CAN0_INT 7
+#define CAN_INT 7
 #define OLED_DC 5
 #define OLED_RST 9
 #define UNIT_SW 15
@@ -232,7 +232,7 @@ void setup() {
   CAN0.init_Filt(5, 0, 0x00000000);
   // delay(100);
   CAN0.setMode(MCP_LISTENONLY);
-  pinMode(CAN0_INT, INPUT);
+  pinMode(CAN_INT, INPUT);
 
   Serial.println("CANBUS bootup complete");
 
@@ -264,7 +264,7 @@ void loop() {
   unsigned char len;
   unsigned char buf[8];
 
-  if (!digitalRead(CAN0_INT)) {
+  if (!digitalRead(CAN_INT)) {
     CAN0.readMsgBuf(&canId, &len, buf);
     arbId = GMLAN_ARB(canId);
 

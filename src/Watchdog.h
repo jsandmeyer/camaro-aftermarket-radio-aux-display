@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define SW_RESET 18
+#define SW_RESET 17
 
 class Watchdog {
     uint16_t limit;

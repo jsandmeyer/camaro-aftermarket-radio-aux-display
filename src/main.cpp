@@ -19,8 +19,8 @@
 #include "debug.h"
 
 // pin definitions: CANBUS
-#define SPI_CS_PIN_CAN 10
-#define CAN0_INT 16
+#define SPI_CS_PIN_CAN 7
+#define CAN_INT 16
 
 // pin definitions: OLED display
 #define SPI_CS_PIN_OLED 2
@@ -102,7 +102,7 @@ void setup() {
         }
     } while (canInitResult != CAN_OK);
 
-    pinMode(CAN0_INT, INPUT);
+    pinMode(CAN_INT, INPUT);
     Serial.println(F("MCP2515 initialization complete"));
 
     /*
@@ -145,9 +145,9 @@ void setup() {
 void loop() {
     /*
      * If new data is available from the CANBUS, process it
-     * CAN0_INT is low if there is a new message in the queue on the CAN controller
+     * CAN_INT is low if there is a new message in the queue on the CAN controller
      */
-    if (!digitalRead(CAN0_INT)) {
+    if (!digitalRead(CAN_INT)) {
         unsigned long canId;
         uint8_t len, buf[8];
 
