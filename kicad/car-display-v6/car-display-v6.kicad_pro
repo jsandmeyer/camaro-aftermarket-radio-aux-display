@@ -49,7 +49,7 @@
         "silk_text_upright": false,
         "zones": {
           "45_degree_only": false,
-          "min_clearance": 0.0
+          "min_clearance": 0.1524
         }
       },
       "diff_pair_dimensions": [
@@ -515,7 +515,7 @@
     "netclass_patterns": [
       {
         "netclass": "Power",
-        "pattern": "+3.3V"
+        "pattern": "+*V"
       },
       {
         "netclass": "Power",
@@ -523,23 +523,15 @@
       },
       {
         "netclass": "Power",
-        "pattern": "+12V"
-      },
-      {
-        "netclass": "Power",
-        "pattern": "L$3.3V"
-      },
-      {
-        "netclass": "Power",
-        "pattern": "L$GND"
+        "pattern": "3F_GND"
       },
       {
         "netclass": "Power",
         "pattern": "CANH"
       },
       {
-        "netclass": "Power",
-        "pattern": "+5V"
+        "netclass": "Default",
+        "pattern": "3F_3.3V"
       }
     ]
   },
