@@ -27,7 +27,7 @@
 // Outside Temperature
 #define GMLAN_MSG_TEMPERATURE 0x212UL
 // Cluster Units
-#define GMLAN_MSG_CLUSTER_UNITS 0x425
+#define GMLAN_MSG_CLUSTER_UNITS 0x425UL
 
 // GMLAN Message Values
 // Rear Park Assist

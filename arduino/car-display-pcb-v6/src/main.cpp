@@ -80,7 +80,7 @@ void setup() {
 
         // init mask 1, filters 2-5 which use mask 1, set to ignore everything and no ext
         canInitResult |= canBus->init_Mask(1, 1, 0x00FFE000);
-        canInitResult |= canBus->init_Filt(2, 1, GMLAN_R_ARB(0x425UL));
+        canInitResult |= canBus->init_Filt(2, 1, GMLAN_R_ARB(GMLAN_MSG_CLUSTER_UNITS));
         canInitResult |= canBus->init_Filt(3, 1, 0x00000000);
         canInitResult |= canBus->init_Filt(4, 1, 0x00000000);
         canInitResult |= canBus->init_Filt(5, 1, 0x00000000);
