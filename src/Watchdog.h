@@ -12,7 +12,7 @@ public:
     explicit Watchdog(uint16_t limit = 32);
     void clearErrors();
     void countError();
-    void resetNow();
+    void resetNow() const;
 };
 
 #endif //WATCHDOG_H

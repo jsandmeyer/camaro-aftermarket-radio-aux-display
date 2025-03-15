@@ -48,30 +48,25 @@ void GMParkAssist::renderDistance() const {
     // max text size is realistically 9 - examples "255cm" or "12in" or "21ft 3in" or "20ft 10in"
     char text[12];
 
-    switch (units) {
-        case GMLAN_VAL_CLUSTER_UNITS_IMPERIAL: {
-            // convert cm to inches, then divide out feet
-            auto inches = static_cast<uint8_t>(lround(CM_PER_IN * parkAssistDistance));
-            const auto feet = inches / 12;
-            inches -= feet * 12;
+    if (units == GMLAN_VAL_CLUSTER_UNITS_IMPERIAL) {
+        // convert cm to inches, then divide out feet
+        auto inches = static_cast<uint8_t>(lround(CM_PER_IN * parkAssistDistance));
+        const auto feet = inches / 12;
+        inches -= feet * 12;
 
-            // only show feet if there is at least 1 foot
-            if (feet > 0) {
-                snprintf(text, 11, "%dft %din", feet, inches);
-            } else {
-                snprintf(text, 11, "%din", inches);
-            }
-
-            break;
+        // only show feet if there is at least 1 foot
+        if (feet > 0) {
+            snprintf(text, 11, "%dft %din", feet, inches);
+        } else {
+            snprintf(text, 11, "%din", inches);
         }
-        case GMLAN_VAL_CLUSTER_UNITS_METRIC:
-        default: {
-            snprintf(text, 11, "%dcm", parkAssistDistance);
-        }
+    } else {
+        snprintf(text, 11, "%dcm", parkAssistDistance);
     }
 
     // distance text display
-    uint16_t width, height;
+    uint16_t width;
+    uint16_t height;
     display->setTextSize(1);
     display->setTextColor(SSD1306_WHITE);
     display->setFont(&FreeSans9pt7b);
@@ -98,7 +93,7 @@ void GMParkAssist::processParkAssistDisableMessage() {
  * Handles the Rear Park Assist "ON" message
  * @param buf is the buffer data from GMLAN
  */
-void GMParkAssist::processParkAssistInfoMessage(uint8_t buf[8]) {
+void GMParkAssist::processParkAssistInfoMessage(const uint8_t buf[8]) {
     /*
      * buf[1] is shortest real distance to nearest object, from 0x00 to 0xFF, in centimeters
      * rendering function will multiply by 0.0328084 for inches if selected

@@ -75,7 +75,7 @@ class GMParkAssist final : public Renderer {
      * Handles the Rear Park Assist "ON" message
      * @param buf is the buffer data from GMLAN
      */
-    void processParkAssistInfoMessage(uint8_t buf[8]);
+    void processParkAssistInfoMessage(const uint8_t buf[8]);
 
 public:
     /**

@@ -8,10 +8,10 @@ Renderer::Renderer(Adafruit_SSD1306* display) : display(display) {}
 
 /**
  * Sets new cluster units
- * @param units the current unit data (GMLAN_VAL_CLUSTER_UNITS_*)
+ * @param newUnits the new unit data (GMLAN_VAL_CLUSTER_UNITS_*)
  */
-void Renderer::setUnits(const byte units) {
-    this->units = units;
+void Renderer::setUnits(const uint8_t newUnits) {
+    this->units = newUnits;
 
     if (canRender()) {
         needsRender = true;

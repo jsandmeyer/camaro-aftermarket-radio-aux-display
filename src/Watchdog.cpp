@@ -19,7 +19,7 @@ void Watchdog::countError() {
     }
 }
 
-void Watchdog::resetNow() {
+void Watchdog::resetNow() const {
     DEBUG(Serial.printf(F("Watchdog rebooting after %u failures\n"), errors));
     delay(1000);
     digitalWrite(SW_RESET, LOW);

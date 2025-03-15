@@ -9,7 +9,8 @@
  * @param height output value for height
  */
 void TextHelper::getTextBounds(Adafruit_SSD1306 *display, const char *str, const GFXfont *font, uint16_t *width, uint16_t *height) {
-    int16_t x1 = 0, y1 = 0;
+    int16_t x1 = 0;
+    int16_t y1 = 0;
     display->setTextSize(1);
     display->setFont(font);
     display->getTextBounds(str, 0, 0, &x1, &y1, width, height);

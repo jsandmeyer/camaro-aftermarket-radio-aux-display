@@ -29,7 +29,7 @@ void GMTemperature::processMessage(unsigned long const arbId, uint8_t len, uint8
         return;
     }
 
-    DEBUG(Serial.printf(F("Got temperature: %x\n"), buf[1]));
+    DEBUG(Serial.printf(F("Got temperature: 0x%02x\n"), buf[1]));
 
     /**
      * buf[1] is hex representation of 2 * temperature in C with offset of 40 degrees
@@ -66,7 +66,8 @@ void GMTemperature::render() {
     snprintf(text, 9, "%d  %c", convertedTemperature, unit);
 
     // temperature text/graphic display
-    uint16_t width, height;
+    uint16_t width;
+    uint16_t height;
     TextHelper::getTextBounds(display, text, &FreeSans18pt7b, &width, &height);
     display->setTextSize(1);
     display->setTextColor(SSD1306_WHITE);

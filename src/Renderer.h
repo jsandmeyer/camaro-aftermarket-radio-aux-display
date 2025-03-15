@@ -15,7 +15,7 @@ protected:
     /**
      * Current unit choice
      */
-    byte units = GMLAN_VAL_CLUSTER_UNITS_METRIC;
+    uint8_t units = GMLAN_VAL_CLUSTER_UNITS_METRIC;
 
     /**
      * OLED display
@@ -73,9 +73,9 @@ public:
 
     /**
      * Sets new cluster units
-     * @param units the current unit data (GMLAN_VAL_CLUSTER_UNITS_*)
+     * @param newUnits the new unit data (GMLAN_VAL_CLUSTER_UNITS_*)
      */
-    void setUnits(byte units);
+    void setUnits(uint8_t newUnits);
 };
 
 #endif //RENDERER_H
