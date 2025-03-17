@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "DataTypes.h" // include before others, especially mcp_can, to normalize data types
 #include <SPI.h>
 #include <mcp_can.h>
 #include <Adafruit_GFX.h>
@@ -17,9 +18,9 @@
 constexpr auto SER_BAUD = 115200UL;
 constexpr auto OLED_SPI_BAUD = 1000000UL;
 
-#if F_CPU == 200000000L
+#if F_CPU == 200000000
 constexpr uint8_t MCP_HZ = MCP_20HZ;
-#elif F_CPU == 16000000L
+#elif F_CPU == 16000000
 constexpr uint8_t MCP_HZ = MCP_16MHZ;
 #elif F_CPU == 8000000
 constexpr uint8_t MCP_HZ = MCP_8MHZ;
