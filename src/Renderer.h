@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 #include <Adafruit_SSD1306.h>
-#include "gmlan.h"
+#include "GMLan.h"
 
 class Renderer {
 protected:
@@ -36,7 +36,7 @@ public:
      * @param len the length of the buffer data
      * @param buf the buffer data
      */
-    virtual void processMessage(unsigned long arbId, uint8_t len, uint8_t buf[8]);
+    virtual void processMessage(uint32_t arbId, uint8_t len, uint8_t buf[8]);
 
     /**
      * Renders data to the display
@@ -63,7 +63,7 @@ public:
      * @param arbId the Arbitration ID
      * @return whether processMessage() will handle this Arbitration ID
      */
-    virtual bool recognizesArbId(unsigned long arbId);
+    virtual bool recognizesArbId(uint32_t arbId);
 
     /**
      * Returns the name of this renderer

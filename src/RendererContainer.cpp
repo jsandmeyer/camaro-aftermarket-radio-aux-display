@@ -5,7 +5,7 @@
  * Must be instantiated with *exact* count of renderers
  * @param rendererCount number of renderers this list will contain
  */
-RendererContainer::RendererContainer(unsigned int const rendererCount) : rendererCount(rendererCount) {
+RendererContainer::RendererContainer(uint16_t const rendererCount) : rendererCount(rendererCount) {
     renderers = new Renderer*[rendererCount + 1];
 }
 

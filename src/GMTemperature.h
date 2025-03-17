@@ -22,10 +22,10 @@ public:
     /**
      * Process GMLAN message
      * @param arbId the arbitration ID GMLAN_MSG_TEMPERATURE
-     * @param len the length of the buffer data
-     * @param buf buffer data from GMLAN
+     * @param length the length of the buffer data
+     * @param buffer buffer data from GMLAN
      */
-    void processMessage(unsigned long arbId, uint8_t len, uint8_t buf[8]) override;
+    void processMessage(uint32_t arbId, uint8_t length, uint8_t buffer[8]) override;
 
     /**
      * Renders the current Temperature display
@@ -54,7 +54,7 @@ public:
      * @param arbId the arbitration ID to check
      * @return whether this module cares about this arbitration ID
      */
-    bool recognizesArbId(unsigned long arbId) override;
+    bool recognizesArbId(uint32_t arbId) override;
 
     /**
      * Returns the name of this renderer

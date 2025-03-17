@@ -20,7 +20,7 @@ class GMParkAssist final : public Renderer {
     /**
      * last timestamp a PA notification was received
      */
-    unsigned long lastTimestamp = 0;
+    uint32_t lastTimestamp = 0;
 
     /**
      * rectangle rendering position
@@ -45,13 +45,13 @@ class GMParkAssist final : public Renderer {
      * Used by renderMarkerRectangle to determine blink rate for park assist
      * Note only indexes 1 through 4 are used
      */
-    unsigned long parkAssistDisplayMod[5] = {1U, 1U, 300U, 650U, 1000U};
+    uint32_t parkAssistDisplayMod[5] = {1U, 1U, 300U, 650U, 1000U};
 
     /**
      * Used by renderMarkerRectangle to determine blink rate for park assist
      * Note only indexes 1 through 4 are used
      */
-    unsigned long parkAssistDisplayCompare[5] = {1U, 1U, 150U, 325U, 500U};
+    uint32_t parkAssistDisplayCompare[5] = {1U, 1U, 150U, 325U, 500U};
 
     /**
      * Renders the Park Assist rectangle, blanking out the rectangle zone first
@@ -90,7 +90,7 @@ public:
      * @param len the length of the buffer data
      * @param buf buffer data from GMLAN
      */
-    void processMessage(unsigned long arbId, uint8_t len, uint8_t buf[8]) override;
+    void processMessage(uint32_t arbId, uint8_t len, uint8_t buf[8]) override;
 
     /**
      * Renders the current Park Assist display
@@ -120,7 +120,7 @@ public:
      * @param arbId the arbitration ID to check
      * @return whether this module cares about this arbitration ID
      */
-    bool recognizesArbId(unsigned long arbId) override;
+    bool recognizesArbId(uint32_t arbId) override;
 
     /**
      * Returns the name of this renderer

@@ -17,6 +17,4 @@ public:
     static void getTextBounds(Adafruit_SSD1306 *display, const char *str, const GFXfont *font, uint16_t *width, uint16_t *height);
 };
 
-
-
 #endif //TEXT_HELPER_H

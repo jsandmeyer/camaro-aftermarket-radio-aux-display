@@ -4,14 +4,14 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-#include "oled.h"
-#include "gmlan.h"
+#include "OLED.h"
+#include "GMLan.h"
 #include "Renderer.h"
 #include "RendererContainer.h"
 #include "GMTemperature.h"
 #include "GMParkAssist.h"
 #include "Watchdog.h"
-#include "debug.h"
+#include "Debug.h"
 
 // communications
 constexpr auto SER_BAUD = 115200UL;
@@ -44,7 +44,7 @@ constexpr uint8_t SPI_SCK = 13;
 // CANBUS filter data
 struct CanMaskFilterData {
     uint8_t ext = 0;
-    unsigned long ulData = 0x00000000;
+    uint32_t ulData = 0x00000000;
 };
 
 constexpr CanMaskFilterData masks[2] = {
@@ -61,19 +61,30 @@ constexpr CanMaskFilterData filters[6] = {
     {1, 0x00000000},
 };
 
-template<typename Runnable, typename ExpectedValue, typename OnError>
-void runWithWatchdog(Watchdog* watchdog, Runnable fn, ExpectedValue rv, OnError err) {
-    ExpectedValue result = rv;
+/**
+ * Run initialization function, and evaluate its result
+ * If enough errors happen, the MCUs on the board all get rebooted by the reset supervisor
+ * @tparam Delegate type of delegateFn lambda function
+ * @tparam Result type of return value of delegateFn lambda function and of expectedValue arg
+ * @tparam OnError type of onErrorFn lambda function
+ * @param watchdog the watchdog instance
+ * @param delegateFn the lambda function to run
+ * @param expectedValue the expected (successful) result
+ * @param onErrorFn lambda function run on error, usually logging / delay logic
+ */
+template<typename Delegate, typename Result, typename OnError>
+void runWithWatchdog(Watchdog* watchdog, Delegate delegateFn, Result expectedValue, OnError onErrorFn) {
+    Result result = expectedValue;
 
     // loop will eventually exit, once watchdog errors hit limit, it will reboot the device
     do {
-        result = fn();
+        result = delegateFn();
 
-        if (result != rv) {
-            err(result);
+        if (result != expectedValue) {
+            onErrorFn(result);
             watchdog->countError();
         }
-    } while (result != rv);
+    } while (result != expectedValue);
 }
 
 /**
@@ -84,7 +95,7 @@ void runWithWatchdog(Watchdog* watchdog, Runnable fn, ExpectedValue rv, OnError 
  * @param watchdog
  */
 void initializeCanBus(MCP_CAN* canBus, Watchdog* watchdog) {
-    Serial.println(F("Initializing MCP25625"));
+    DEBUG(Serial.println(F("Initializing MCP25625")));
 
     runWithWatchdog(
         watchdog,
@@ -93,12 +104,12 @@ void initializeCanBus(MCP_CAN* canBus, Watchdog* watchdog) {
         },
         static_cast<uint8_t>(CAN_OK),
         [](const uint8_t errorCode) {
-            Serial.printf(F("MCP25625 initialization failed, error code =%u\n"), errorCode);
+            DEBUG(Serial.printf(F("MCP25625 initialization failed, error code =%u\n"), errorCode));
             delay(500);
         }
     );
 
-    Serial.println(F("Setting MCP25625 masks and filters"));
+    DEBUG(Serial.println(F("Setting MCP25625 masks and filters")));
 
     for (uint8_t maskId = 0; maskId < 2; maskId++) {
         auto mask = masks[maskId];
@@ -111,7 +122,7 @@ void initializeCanBus(MCP_CAN* canBus, Watchdog* watchdog) {
             },
             static_cast<uint8_t>(CAN_OK),
             [maskId](const uint8_t errorCode) {
-                Serial.printf(F("MCP25625 setting mask %u failed, error code =%u\n"), maskId, errorCode);
+                DEBUG(Serial.printf(F("MCP25625 setting mask %u failed, error code =%u\n"), maskId, errorCode));
                 delay(500);
             }
         );
@@ -130,14 +141,14 @@ void initializeCanBus(MCP_CAN* canBus, Watchdog* watchdog) {
                 },
                 static_cast<uint8_t>(CAN_OK),
                 [filterId](const uint8_t errorCode) {
-                    Serial.printf(F("MCP25625 setting filter %u failed, error code =%u\n"), filterId, errorCode);
+                    DEBUG(Serial.printf(F("MCP25625 setting filter %u failed, error code =%u\n"), filterId, errorCode));
                     delay(500);
                 }
             );
         }
     }
 
-    Serial.println(F("Setting MCP25625 mode to listen"));
+    DEBUG(Serial.println(F("Setting MCP25625 mode to listen")));
 
     runWithWatchdog(
         watchdog,
@@ -146,14 +157,14 @@ void initializeCanBus(MCP_CAN* canBus, Watchdog* watchdog) {
         },
         static_cast<uint8_t>(CAN_OK),
         [](const uint8_t errorCode) {
-            Serial.printf(F("MCP25625 could not enter listen-only mode, error code =%u\n"), errorCode);
+            DEBUG(Serial.printf(F("MCP25625 could not enter listen-only mode, error code =%u\n"), errorCode));
             delay(500);
         }
     );
 
     pinMode(CAN_INT, INPUT); // set up interrupt
 
-    Serial.println(F("MCP25625 initialization complete"));
+    DEBUG(Serial.println(F("MCP25625 initialization complete")));
 }
 
 /**
@@ -163,7 +174,7 @@ void initializeCanBus(MCP_CAN* canBus, Watchdog* watchdog) {
  * @param watchdog
  */
 void initializeOledDisplay(Adafruit_SSD1306* display, Watchdog* watchdog) {
-    Serial.println(F("Initializing SSD1306 OLED"));
+    DEBUG(Serial.println(F("Initializing SSD1306 OLED")));
 
     runWithWatchdog(
         watchdog,
@@ -172,13 +183,13 @@ void initializeOledDisplay(Adafruit_SSD1306* display, Watchdog* watchdog) {
         },
         true,
         [](const bool errorCode) {
-            Serial.printf(F("SSD1306 OLED initialization error %u\n"), errorCode);
+            DEBUG(Serial.printf(F("SSD1306 OLED initialization error %u\n"), errorCode));
         }
     );
 
     display->clearDisplay();
     display->display();
-    Serial.println(F("SSD1306 OLED initialization complete"));
+    DEBUG(Serial.println(F("SSD1306 OLED initialization complete")));
 }
 
 /**
@@ -189,7 +200,7 @@ void initializeOledDisplay(Adafruit_SSD1306* display, Watchdog* watchdog) {
  */
 void readCanBus(MCP_CAN* canBus, const RendererContainer* renderers) {
     if (!digitalRead(CAN_INT)) {
-        unsigned long canId;
+        uint32_t canId;
         uint8_t len;
         uint8_t buf[8];
 
@@ -263,47 +274,13 @@ void renderDisplay(Adafruit_SSD1306* display, const RendererContainer* renderers
     display->display();
 }
 
-#if DO_DEBUG == 1
-void handleDebug(const RendererContainer* renderers) {
-    while (Serial.available()) {
-        Serial.print("\n");
-        switch (const auto input = Serial.read(); input) {
-            case 'r':
-                Serial.print(F("Rebooting due to user input.\n"));
-                delay(1000);
-                digitalWrite(SW_RESET, LOW);
-            break;
-            case 'm':
-            case 'i': {
-                const uint8_t units = input == 'm'
-                    ? GMLAN_VAL_CLUSTER_UNITS_METRIC
-                    : GMLAN_VAL_CLUSTER_UNITS_IMPERIAL;
-                for (Renderer *renderer : *renderers) {
-                    renderer->setUnits(units);
-                }
-                break;
-            }
-            case 't': {
-                uint8_t b[] = { 0, 0x72, 0, 0, 0, 0, 0, 0 };
-                (*renderers)[1]->processMessage(0x212, 2, b);
-                break;
-            }
-            case 'p': {
-                uint8_t b[8] = { GMLAN_VAL_PARK_ASSIST_ON, 0x33, 0x22, 0x00, 0, 0, 0, 0 };
-                (*renderers)[0]->processMessage(0x1D4, 3, b);
-                break;
-            }
-            default:
-                Serial.printf(F("Unrecognized input '%c'\n"), input);
-            break;
-        }
-    }
-}
-#endif
-
+/**
+ * Main entrypoint
+ * Called by int main() by framework
+ */
 [[noreturn]] void setup() {
-    Serial.begin(SER_BAUD);
-    Serial.println(F("Booting up"));
+    DEBUG(Serial.begin(SER_BAUD));
+    DEBUG(Serial.println(F("Booting up")));
     const auto watchdog = new Watchdog();
 
     delay(10);
@@ -320,23 +297,27 @@ void handleDebug(const RendererContainer* renderers) {
      * These should be stored in RendererContainer in order of priority, with most important renderer first
      */
 
-    Serial.println(F("Preparing renderers"));
+    DEBUG(Serial.println(F("Preparing renderers")));
     const auto renderers = new RendererContainer(2);
     Renderer *lastRenderer = nullptr; // last renderer to render, to avoid doubles of same data
     renderers->setRenderer(0, new GMParkAssist(display));
     renderers->setRenderer(1, new GMTemperature(display));
 
-    Serial.println(F("Booted up"));
+    DEBUG(Serial.println(F("Booted up")));
 
     // loop in setup to avoid global variables
     while (true) {
         readCanBus(canBus, renderers);
         renderDisplay(display, renderers, lastRenderer);
 
-        DEBUG(handleDebug(renderers));
+        Debug::processDebugInput(renderers);
     }
 }
 
+/**
+ * Loop entrypoint
+ * Called by int main() from framework, but realistically will never run because setup() is [[noreturn]]
+ */
 void loop() {
     /* do nothing - loop handled inside setup() */
 }

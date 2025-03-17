@@ -4,11 +4,11 @@
 #include <Adafruit_SSD1306.h>
 #include <Fonts/FreeSans9pt7b.h>
 
-#include "debug.h"
+#include "Debug.h"
 #include "GMParkAssist.h"
 #include "TextHelper.h"
-#include "oled.h"
-#include "gmlan.h"
+#include "OLED.h"
+#include "GMLan.h"
 
 /**
  * Renders the Park Assist rectangle, blanking out the rectangle zone first
@@ -166,7 +166,7 @@ GMParkAssist::GMParkAssist(Adafruit_SSD1306* display) : Renderer(display) {}
  * @param len the length of the buffer data
  * @param buf is the buffer data from GMLAN
  */
-void GMParkAssist::processMessage(unsigned long const arbId, uint8_t len, uint8_t buf[8]) {
+void GMParkAssist::processMessage(uint32_t const arbId, uint8_t len, uint8_t buf[8]) {
     if (arbId != GMLAN_MSG_PARK_ASSIST) {
         // don't process irrelevant messages
         return;
@@ -238,7 +238,7 @@ bool GMParkAssist::canRender() {
  * @param arbId the arbitration ID to check
  * @return whether this module cares about this arbitration ID
  */
-bool GMParkAssist::recognizesArbId(unsigned long const arbId) {
+bool GMParkAssist::recognizesArbId(uint32_t const arbId) {
     return arbId == GMLAN_MSG_PARK_ASSIST || arbId == GMLAN_MSG_CLUSTER_UNITS;
 }
 

@@ -12,7 +12,7 @@ class RendererContainer {
     /**
      * Number of Renderer pointers
      */
-    unsigned int rendererCount;
+    uint16_t rendererCount;
 
 public:
     /**
@@ -20,7 +20,7 @@ public:
      * Must be instantiated with *exact* count of renderers
      * @param rendererCount number of renderers this list will contain
      */
-    explicit RendererContainer(unsigned int rendererCount);
+    explicit RendererContainer(uint16_t rendererCount);
 
     /**
      * Places a renderer at a specific index (priority)

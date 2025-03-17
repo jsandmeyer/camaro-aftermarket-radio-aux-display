@@ -4,11 +4,11 @@
 #include <Adafruit_SSD1306.h>
 #include <Fonts/FreeSans18pt7b.h>
 
-#include "debug.h"
+#include "Debug.h"
 #include "GMTemperature.h"
 #include "TextHelper.h"
-#include "oled.h"
-#include "gmlan.h"
+#include "OLED.h"
+#include "GMLan.h"
 
 /**
  * Create a GMTemperature instance
@@ -19,25 +19,25 @@ GMTemperature::GMTemperature(Adafruit_SSD1306* display) : Renderer(display) {}
 /**
  * Processes the exterior temperature sensor data
  * @param arbId the arbitration ID GMLAN_MSG_TEMPERATURE
- * @param len the length of the buffer data
- * @param buf is the buffer data from GMLAN
+ * @param length the length of the buffer data
+ * @param buffer is the buffer data from GMLAN
  * @return
  */
-void GMTemperature::processMessage(unsigned long const arbId, uint8_t len, uint8_t buf[8]) {
+void GMTemperature::processMessage(uint32_t const arbId, uint8_t length, uint8_t buffer[8]) {
     if (arbId != GMLAN_MSG_TEMPERATURE) {
         // don't process irrelevant messages
         return;
     }
 
-    DEBUG(Serial.printf(F("Got temperature: 0x%02x\n"), buf[1]));
+    DEBUG(Serial.printf(F("Got temperature: 0x%02x\n"), buffer[1]));
 
     /**
-     * buf[1] is hex representation of 2 * temperature in C with offset of 40 degrees
+     * buffer[1] is hex representation of 2 * temperature in C with offset of 40 degrees
      * math is done in rendering function (including Imperial units conversion)
      */
 
-    if (temperature != buf[1]) {
-        temperature = buf[1];
+    if (temperature != buffer[1]) {
+        temperature = buffer[1];
         needsRender = true;
     }
 }
@@ -120,7 +120,7 @@ bool GMTemperature::canRender() {
  * @param arbId the arbitration ID to check
  * @return whether this module cares about this arbitration ID
  */
-bool GMTemperature::recognizesArbId(unsigned long const arbId) {
+bool GMTemperature::recognizesArbId(uint32_t const arbId) {
     return arbId == GMLAN_MSG_TEMPERATURE;
 }
 
