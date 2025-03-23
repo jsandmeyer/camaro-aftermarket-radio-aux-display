@@ -31,7 +31,7 @@ void GMParkAssist::renderMarkerRectangle() const {
         && now % parkAssistDisplayMod[parkAssistLevel] < parkAssistDisplayCompare[parkAssistLevel]
     ) {
         display->fillRect(
-            PA_BAR_MARGIN + PA_BAR_W * (parkAssistSlot - 1),
+            PA_BAR_MARGIN + PA_BAR_W * parkAssistSlot ,
             SCREEN_HEIGHT - PA_BAR_H,
             PA_BAR_W + PA_BAR_EXTRA_W,
             PA_BAR_H,
