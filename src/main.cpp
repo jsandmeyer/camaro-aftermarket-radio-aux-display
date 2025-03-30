@@ -7,6 +7,7 @@
 
 #include "OLED.h"
 #include "GMLan.h"
+#include "Flash.h"
 #include "Renderer.h"
 #include "RendererContainer.h"
 #include "GMTemperature.h"
@@ -215,6 +216,7 @@ void readCanBus(MCP_CAN* canBus, const RendererContainer* renderers) {
         if (arbId == GMLAN_MSG_CLUSTER_UNITS) {
             const uint8_t units = buf[0] & 0x0F;
             DEBUG(Serial.printf(F("New cluster units: 0x%02x\n"), units));
+            Flash::saveUnits(units);
 
             for (Renderer *renderer : *renderers) {
                 renderer->setUnits(units);
@@ -268,11 +270,13 @@ void renderDisplay(Adafruit_SSD1306* display, const RendererContainer* renderers
         }
     }
 
-    /*
-     * If there is absolutely nothing that should or can be rendered, clear the display
-     */
-    display->clearDisplay();
-    display->display();
+    if (lastRenderer != nullptr) {
+        /*
+         * If there is absolutely nothing that should or can be rendered, clear the display
+         */
+        display->clearDisplay();
+        display->display();
+    }
 }
 
 /**
@@ -299,10 +303,12 @@ void renderDisplay(Adafruit_SSD1306* display, const RendererContainer* renderers
      */
 
     DEBUG(Serial.println(F("Preparing renderers")));
+    Flash::setDefaults();
+    const auto units = Flash::getUnits();
     const auto renderers = new RendererContainer(2);
     Renderer *lastRenderer = nullptr; // last renderer to render, to avoid doubles of same data
-    renderers->setRenderer(0, new GMParkAssist(display));
-    renderers->setRenderer(1, new GMTemperature(display));
+    renderers->setRenderer(0, new GMParkAssist(display, units));
+    renderers->setRenderer(1, new GMTemperature(display, units));
 
     DEBUG(Serial.println(F("Booted up")));
 

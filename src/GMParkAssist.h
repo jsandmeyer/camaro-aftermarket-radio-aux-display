@@ -81,8 +81,9 @@ public:
     /**
      * Create a GMParkAssist instance
      * @param display the OLED display from SSD1306 library
+     * @param units the initial unit state
      */
-    explicit GMParkAssist(Adafruit_SSD1306 *display);
+    GMParkAssist(Adafruit_SSD1306 *display, uint8_t units);
 
     /**
      * Process GMLAN message

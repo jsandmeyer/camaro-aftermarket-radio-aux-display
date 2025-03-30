@@ -3,8 +3,9 @@
 /**
  * Create a Renderer
  * @param display OLED display
+ * @param units the initial unit state
  */
-Renderer::Renderer(Adafruit_SSD1306* display) : display(display) {}
+Renderer::Renderer(Adafruit_SSD1306* display, uint8_t const units): units(units), display(display) {}
 
 /**
  * Sets new cluster units

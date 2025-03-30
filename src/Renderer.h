@@ -27,8 +27,9 @@ public:
     /**
      * Create a Renderer
      * @param display OLED display
+     * @param units the initial unit state
      */
-    explicit Renderer(Adafruit_SSD1306 *display);
+    Renderer(Adafruit_SSD1306 *display, uint8_t units);
 
     /**
      * Process a GMLAN message

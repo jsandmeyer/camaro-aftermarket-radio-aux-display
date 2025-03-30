@@ -13,8 +13,9 @@
 /**
  * Create a GMTemperature instance
  * @param display the OLED display from SSD1306 library
+ * @param units the initial unit state
  */
-GMTemperature::GMTemperature(Adafruit_SSD1306* display) : Renderer(display) {}
+GMTemperature::GMTemperature(Adafruit_SSD1306* display, uint8_t const units) : Renderer(display, units) {}
 
 /**
  * Processes the exterior temperature sensor data

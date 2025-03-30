@@ -157,8 +157,9 @@ void GMParkAssist::processParkAssistInfoMessage(const uint8_t buf[8]) {
 /**
  * Create a GMParkAssist instance
  * @param display the OLED display from SSD1306 library
+ * @param units the initial unit state
  */
-GMParkAssist::GMParkAssist(Adafruit_SSD1306* display) : Renderer(display) {}
+GMParkAssist::GMParkAssist(Adafruit_SSD1306* display, uint8_t const units) : Renderer(display, units) {}
 
 /**
  * Processes the park assist message and sets state
