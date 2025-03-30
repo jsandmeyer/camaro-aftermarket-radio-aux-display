@@ -318,6 +318,7 @@ void renderDisplay(Adafruit_SSD1306* display, const RendererContainer* renderers
         renderDisplay(display, renderers, lastRenderer);
 
         Debug::processDebugInput(renderers);
+        delay(10);
     }
 }
 
