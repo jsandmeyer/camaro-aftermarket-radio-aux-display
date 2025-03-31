@@ -7,11 +7,11 @@
     #define DEBUG(X)
 #endif
 
-#include <RendererContainer.h>
+#include <Renderer.h>
 
 class Debug {
 public:
-    static void processDebugInput(const RendererContainer* renderers);
+    static void processDebugInput(Renderer** renderers, size_t numRenderers);
 };
 
 

@@ -9,7 +9,6 @@
 #include "GMLan.h"
 #include "Flash.h"
 #include "Renderer.h"
-#include "RendererContainer.h"
 #include "GMTemperature.h"
 #include "GMParkAssist.h"
 #include "Watchdog.h"
@@ -199,8 +198,9 @@ void initializeOledDisplay(Adafruit_SSD1306* display, Watchdog* watchdog) {
  * CAN_INT is low if there is a new message in the queue on the CAN controller
  * @param canBus
  * @param renderers
+ * @param numRenderers
  */
-void readCanBus(MCP_CAN* canBus, const RendererContainer* renderers) {
+void readCanBus(MCP_CAN* canBus, Renderer** renderers, const size_t numRenderers) {
     if (!digitalRead(CAN_INT)) {
         uint32_t canId;
         uint8_t len;
@@ -218,15 +218,15 @@ void readCanBus(MCP_CAN* canBus, const RendererContainer* renderers) {
             DEBUG(Serial.printf(F("New cluster units: 0x%02x\n"), units));
             Flash::saveUnits(units);
 
-            for (Renderer *renderer : *renderers) {
-                renderer->setUnits(units);
+            for (size_t i = 0; i < numRenderers; i++) {
+                renderers[i]->setUnits(units);
             }
         }
 
-        for (Renderer *renderer : *renderers) {
-            if (renderer->recognizesArbId(arbId)) {
-                DEBUG(Serial.printf(F("Processing via %s ARB ID 0x%08lx\n"), renderer->getName(), arbId));
-                renderer->processMessage(arbId, len, buf);
+        for (size_t i = 0; i < numRenderers; i++) {
+            if (renderers[i]->recognizesArbId(arbId)) {
+                DEBUG(Serial.printf(F("Processing via %s ARB ID 0x%08lx\n"), renderers[i]->getName(), arbId));
+                renderers[i]->processMessage(arbId, len, buf);
             }
         }
     }
@@ -236,18 +236,19 @@ void readCanBus(MCP_CAN* canBus, const RendererContainer* renderers) {
  * Render data to display
  * @param display
  * @param renderers
+ * @param numRenderers
  * @param lastRenderer
  */
-void renderDisplay(Adafruit_SSD1306* display, const RendererContainer* renderers, Renderer*& lastRenderer) {
+void renderDisplay(Adafruit_SSD1306* display, Renderer** renderers, const size_t numRenderers, Renderer*& lastRenderer) {
     /*
      * Render new data, based on priority, taking the first which "should render"
      * It is always assumed that if a module "should render" that it has new data and must render now
      */
-    for (Renderer *renderer : *renderers) {
-        if (renderer->shouldRender()) {
-            DEBUG(Serial.printf(F("Rendering [1] via %s\n"), renderer->getName()));
-            renderer->render();
-            lastRenderer = renderer;
+    for (size_t i = 0; i < numRenderers; i++) {
+        if (renderers[i]->shouldRender()) {
+            DEBUG(Serial.printf(F("Rendering [1] via %s\n"), renderers[i]->getName()));
+            renderers[i]->render();
+            lastRenderer = renderers[i];
             return; // exit loop
         }
     }
@@ -256,16 +257,16 @@ void renderDisplay(Adafruit_SSD1306* display, const RendererContainer* renderers
      * Render old data, based on priority, taking the first which "can render"
      * Only the first module which "can render" is considered, this avoids oscillation in display choice
      */
-    for (Renderer *renderer : *renderers) {
-        if (renderer->canRender()) {
+    for (size_t i = 0; i < numRenderers; i++) {
+        if (renderers[i]->canRender()) {
             // if we just rendered, don't waste time re-rendering
-            if (lastRenderer == renderer) {
+            if (lastRenderer == renderers[i]) {
                 return;
             }
 
-            DEBUG(Serial.printf(F("Rendering [2] via %s\n"), renderer->getName()));
-            renderer->render();
-            lastRenderer = renderer;
+            DEBUG(Serial.printf(F("Rendering [2] via %s\n"), renderers[i]->getName()));
+            renderers[i]->render();
+            lastRenderer = renderers[i];
             return; // exit loop
         }
     }
@@ -299,25 +300,28 @@ void renderDisplay(Adafruit_SSD1306* display, const RendererContainer* renderers
     /*
      * Set up Renderer objects
      * These objects both read/process GMLAN data and render to the display when called
-     * These should be stored in RendererContainer in order of priority, with most important renderer first
+     * These should be stored in **renderers in order of priority, with most important renderer first
      */
 
     DEBUG(Serial.println(F("Preparing renderers")));
     Flash::setDefaults();
     const auto units = Flash::getUnits();
-    const auto renderers = new RendererContainer(2);
+
+    constexpr size_t numRenderers = 2;
     Renderer *lastRenderer = nullptr; // last renderer to render, to avoid doubles of same data
-    renderers->setRenderer(0, new GMParkAssist(display, units));
-    renderers->setRenderer(1, new GMTemperature(display, units));
+    Renderer* renderers[numRenderers + 1];
+    renderers[0] = new GMParkAssist(display, units);
+    renderers[1] = new GMTemperature(display, units);
+    renderers[2] = nullptr;
 
     DEBUG(Serial.println(F("Booted up")));
 
     // loop in setup to avoid global variables
     while (true) {
-        readCanBus(canBus, renderers);
-        renderDisplay(display, renderers, lastRenderer);
+        readCanBus(canBus, renderers, numRenderers);
+        renderDisplay(display, renderers, numRenderers, lastRenderer);
 
-        Debug::processDebugInput(renderers);
+        Debug::processDebugInput(renderers, numRenderers);
         delay(10);
     }
 }

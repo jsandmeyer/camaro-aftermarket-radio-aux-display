@@ -3,7 +3,7 @@
 #include "Flash.h"
 #include "Watchdog.h"
 
-void Debug::processDebugInput(const RendererContainer* renderers) {
+void Debug::processDebugInput(Renderer** renderers, size_t numRenderers) {
 #if DO_DEBUG == 1
     while (Serial && Serial.available()) {
         Serial.print("\n");
@@ -21,20 +21,28 @@ void Debug::processDebugInput(const RendererContainer* renderers) {
 
                 Flash::saveUnits(units);
 
-                for (Renderer *renderer : *renderers) {
-                    renderer->setUnits(units);
+                for (size_t i = 0; i < numRenderers; i++) {
+                    renderers[i]->setUnits(units);
                 }
 
                 break;
             }
             case 't': {
                 uint8_t b[] = { 0, 0x72, 0, 0, 0, 0, 0, 0 };
-                (*renderers)[1]->processMessage(GMLAN_MSG_TEMPERATURE, 2, b);
+
+                for (size_t i = 0; i < numRenderers; i++) {
+                    renderers[i]->processMessage(GMLAN_MSG_TEMPERATURE, 2, b);
+                }
+
                 break;
             }
             case 'p': {
                 uint8_t b[8] = { GMLAN_VAL_PARK_ASSIST_ON, 0x33, 0x22, 0x00, 0, 0, 0, 0 };
-                (*renderers)[0]->processMessage(GMLAN_MSG_PARK_ASSIST, 3, b);
+
+                for (size_t i = 0; i < numRenderers; i++) {
+                    renderers[i]->processMessage(GMLAN_MSG_PARK_ASSIST, 2, b);
+                }
+
                 break;
             }
             default:
