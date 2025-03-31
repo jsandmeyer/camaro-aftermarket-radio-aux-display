@@ -45,6 +45,15 @@ void Debug::processDebugInput(Renderer** renderers, size_t numRenderers) {
 
                 break;
             }
+            case 'q': {
+                uint8_t b[8] = { GMLAN_VAL_PARK_ASSIST_OFF, 0x00, 0x00, 0x00, 0, 0, 0, 0 };
+
+                for (size_t i = 0; i < numRenderers; i++) {
+                    renderers[i]->processMessage(GMLAN_MSG_PARK_ASSIST, 2, b);
+                }
+
+                break;
+            }
             default:
                 Serial.printf(F("Unrecognized input '%c'\n"), input);
             break;
