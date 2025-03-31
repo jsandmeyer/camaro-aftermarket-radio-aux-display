@@ -309,10 +309,9 @@ void renderDisplay(Adafruit_SSD1306* display, Renderer** renderers, const size_t
 
     constexpr size_t numRenderers = 2;
     Renderer *lastRenderer = nullptr; // last renderer to render, to avoid doubles of same data
-    Renderer* renderers[numRenderers + 1];
+    Renderer* renderers[numRenderers];
     renderers[0] = new GMParkAssist(display, units);
     renderers[1] = new GMTemperature(display, units);
-    renderers[2] = nullptr;
 
     DEBUG(Serial.println(F("Booted up")));
 
