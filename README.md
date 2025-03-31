@@ -61,7 +61,7 @@ Some SMT components are slightly different, like using an AMEGA328PB instead of 
 
 #### Hardware V6
 
-This is still in development.
+This is the second production version.
 Versions 4 and 5 had issues which prevented them from going to production.
 This version includes mounting holes, extra power supply filtering, a watchdog to reboot the MCU if there are too many errors during boot, and auto-sensing of temperature/distance units instead of using a jumper.
 The circuit also uses the 3.3V power supply for all logic except for the CAN transciever, which runs on the base 5V.
